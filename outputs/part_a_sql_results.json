@@ -1,0 +1,71 @@
+{
+  "Q1": {
+    "rows": 30
+  },
+  "Q2": {
+    "rows": 30,
+    "total_revenue_inr": 2998668.8,
+    "largest_cell": {
+      "city": "Bengaluru",
+      "category": "Electronics",
+      "revenue_inr": 233909.45
+    }
+  },
+  "Q3": {
+    "rows": 11
+  },
+  "Q4": {
+    "rows": 25
+  },
+  "Q5": {
+    "rows": 550,
+    "average_customer_spend_inr": 2552.06
+  },
+  "Q6": {
+    "rows": 1175,
+    "rank_differs_from_row_number": 8,
+    "top_customer_by_city": {
+      "Bengaluru": {
+        "customer_id": "C0082",
+        "total_spend_inr": 12856.2
+      },
+      "Chennai": {
+        "customer_id": "C0930",
+        "total_spend_inr": 10151.4
+      },
+      "Delhi": {
+        "customer_id": "C0291",
+        "total_spend_inr": 13742.6
+      },
+      "Hyderabad": {
+        "customer_id": "C0743",
+        "total_spend_inr": 12730.05
+      },
+      "Mumbai": {
+        "customer_id": "C0693",
+        "total_spend_inr": 14766.55
+      },
+      "Pune": {
+        "customer_id": "C0426",
+        "total_spend_inr": 10377.1
+      }
+    }
+  },
+  "Q7": {
+    "rows": 183,
+    "last_cumulative_revenue_inr": 2998668.8
+  },
+  "checks": {
+    "Q1 customer count": true,
+    "Q2 row count": true,
+    "Q2 revenue total": true,
+    "Q2 largest city-category": true,
+    "Q3 product count": true,
+    "Q4 customer count": true,
+    "Q5 above-average count": true,
+    "Q5 mean across qualifying customers": true,
+    "Q6 rank ties": true,
+    "Q7 days": true,
+    "Q7 cumulative revenue": true
+  }
+}

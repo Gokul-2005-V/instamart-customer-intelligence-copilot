@@ -1,0 +1,145 @@
+{
+  "pivot_table_with_margins": {
+    "Bengaluru": {
+      "Dairy": 87075.05,
+      "Electronics": 233909.45,
+      "Grocery": 110915.65,
+      "Personal Care": 20193.85,
+      "Snacks": 71549.4,
+      "All": 523643.4
+    },
+    "Chennai": {
+      "Dairy": 78301.8,
+      "Electronics": 195508.8,
+      "Grocery": 93817.45,
+      "Personal Care": 27675.4,
+      "Snacks": 68325.7,
+      "All": 463629.15
+    },
+    "Delhi": {
+      "Dairy": 117271.7,
+      "Electronics": 158549.1,
+      "Grocery": 112658.05,
+      "Personal Care": 23471.5,
+      "Snacks": 90879.45,
+      "All": 502829.8
+    },
+    "Hyderabad": {
+      "Dairy": 83731.0,
+      "Electronics": 228913.1,
+      "Grocery": 109475.4,
+      "Personal Care": 24800.05,
+      "Snacks": 81670.35,
+      "All": 528589.9
+    },
+    "Mumbai": {
+      "Dairy": 75209.85,
+      "Electronics": 214738.4,
+      "Grocery": 78970.15,
+      "Personal Care": 38018.0,
+      "Snacks": 72122.1,
+      "All": 479058.5
+    },
+    "Pune": {
+      "Dairy": 90349.55,
+      "Electronics": 187629.25,
+      "Grocery": 108456.6,
+      "Personal Care": 34275.15,
+      "Snacks": 80207.5,
+      "All": 500918.05
+    },
+    "All": {
+      "Dairy": 531938.95,
+      "Electronics": 1219248.1,
+      "Grocery": 614293.3,
+      "Personal Care": 168433.95,
+      "Snacks": 464754.5,
+      "All": 2998668.8
+    }
+  },
+  "pivot_grand_total_inr": 2998668.8,
+  "city_summary": [
+    {
+      "city": "Bengaluru",
+      "sum_inr": 523643.4,
+      "mean_inr": 276.47,
+      "count": 1894
+    },
+    {
+      "city": "Chennai",
+      "sum_inr": 463629.15,
+      "mean_inr": 272.72,
+      "count": 1700
+    },
+    {
+      "city": "Delhi",
+      "sum_inr": 502829.8,
+      "mean_inr": 243.62,
+      "count": 2064
+    },
+    {
+      "city": "Hyderabad",
+      "sum_inr": 528589.9,
+      "mean_inr": 284.95,
+      "count": 1855
+    },
+    {
+      "city": "Mumbai",
+      "sum_inr": 479058.5,
+      "mean_inr": 297.0,
+      "count": 1613
+    },
+    {
+      "city": "Pune",
+      "sum_inr": 500918.05,
+      "mean_inr": 252.48,
+      "count": 1984
+    }
+  ],
+  "completed_order_amount": {
+    "count": 11110,
+    "mean_inr": 269.91,
+    "median_inr": 135.0,
+    "skewness": 4.61,
+    "q1_inr": 64.8,
+    "q3_inr": 297.0,
+    "iqr_inr": 232.2,
+    "lower_fence_inr": -283.5,
+    "upper_fence_inr": 645.3,
+    "outliers_below_lower_fence": 0,
+    "outliers_above_upper_fence": 897
+  },
+  "correlation_matrix": {
+    "order_amount": {
+      "order_amount": 1.0,
+      "discount_pct": -0.095106,
+      "quantity": 0.087294,
+      "delivery_minutes": -0.003135
+    },
+    "discount_pct": {
+      "order_amount": -0.095106,
+      "discount_pct": 1.0,
+      "quantity": -0.000359,
+      "delivery_minutes": -0.009808
+    },
+    "quantity": {
+      "order_amount": 0.087294,
+      "discount_pct": -0.000359,
+      "quantity": 1.0,
+      "delivery_minutes": -0.012623
+    },
+    "delivery_minutes": {
+      "order_amount": -0.003135,
+      "discount_pct": -0.009808,
+      "quantity": -0.012623,
+      "delivery_minutes": 1.0
+    }
+  },
+  "strongest_absolute_correlation_pair": {
+    "variable_1": "order_amount",
+    "variable_2": "discount_pct",
+    "correlation": -0.09510585545204023,
+    "absolute_correlation": 0.09510585545204023
+  },
+  "interpretation_under_200_words": "The dataset describes fictional customer orders across six cities and product categories. Completed order amounts are strongly right-skewed: the mean is INR 269.91, above the INR 135.00 median, with skewness 4.61. The 1.5\u00d7IQR upper fence is INR 645.30; 897 orders exceed it and 0 fall below the lower fence. The largest absolute pairwise correlation is order_amount versus discount_pct (-0.095). This correlation is small and does not establish causation."
+}

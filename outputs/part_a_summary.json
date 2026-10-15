@@ -1,0 +1,41 @@
+{
+  "customers": {
+    "rows": 1200,
+    "cities": {
+      "Pune": 227,
+      "Delhi": 210,
+      "Bengaluru": 197,
+      "Chennai": 191,
+      "Hyderabad": 191,
+      "Mumbai": 184
+    },
+    "genders": {
+      "female": 610,
+      "male": 560,
+      "unknown": 30
+    },
+    "missing_ages": 0
+  },
+  "orders": {
+    "rows": 12309,
+    "statuses": {
+      "completed": 11110,
+      "cancelled": 1199
+    },
+    "missing_amounts": 0,
+    "missing_delivery_completed": 0,
+    "missing_delivery_cancelled": 1199,
+    "completed_revenue_inr": 2998668.8
+  },
+  "cleaning_changes": {
+    "city_spellings_standardised_from": 24,
+    "city_spellings_after_standardisation": 6,
+    "age_values_imputed": 67,
+    "blank_genders_mapped_to_unknown": 30,
+    "exact_duplicate_order_rows_removed": 119,
+    "older_order_id_records_removed": 656,
+    "order_amount_values_imputed_after_deduplication": 112,
+    "completed_delivery_values_imputed_after_deduplication": 774,
+    "negative_delivery_values_in_raw_data": 106
+  }
+}
