@@ -1,0 +1,31 @@
+{
+  "overlap_10": {
+    "overlap": 10,
+    "chunk_count": 15,
+    "question_count": 14,
+    "answerable_questions": 12,
+    "unanswerable_questions": 2,
+    "expected_doc_in_top_3": 12,
+    "expected_doc_accuracy": 1.0,
+    "expected_fact_in_answer": 12,
+    "expected_fact_accuracy": 1.0,
+    "correct_unanswerable_fallbacks": 2,
+    "unanswerable_fallback_accuracy": 1.0,
+    "llm_errors": 0
+  },
+  "overlap_0": {
+    "overlap": 0,
+    "chunk_count": 13,
+    "question_count": 14,
+    "answerable_questions": 12,
+    "unanswerable_questions": 2,
+    "expected_doc_in_top_3": 12,
+    "expected_doc_accuracy": 1.0,
+    "expected_fact_in_answer": 10,
+    "expected_fact_accuracy": 0.8333,
+    "correct_unanswerable_fallbacks": 2,
+    "unanswerable_fallback_accuracy": 1.0,
+    "llm_errors": 0
+  },
+  "zero_overlap_fact_failure_count": 2
+}
