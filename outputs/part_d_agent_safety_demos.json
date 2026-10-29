@@ -1,0 +1,14 @@
+{
+  "token_limit_demo": {
+    "status": "FALLBACK_TOKEN_LIMIT",
+    "llm_calls": 2,
+    "tokens_used": 222,
+    "final_answer": "FALLBACK_TOKEN_LIMIT: processing stopped safely. Completed tools: get_order. Please hand this case to a human support agent."
+  },
+  "timeout_demo": {
+    "status": "FALLBACK_TIMEOUT",
+    "llm_calls": 0,
+    "tokens_used": 0,
+    "final_answer": "FALLBACK_TIMEOUT: processing stopped safely. Completed tools: no tools completed. Please hand this case to a human support agent."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "run_id": "demo-timeout",
+  "scenario_id": "S1_TIMEOUT",
+  "messages": [
+    {
+      "role": "system",
+      "content": "AGENT\nYou are a cautious Instamart refund agent. Follow policy exactly. Only completed orders can be refunded. Delivery over 45 minutes means 100% of order_amount; delivery in 45 minutes or less means zero refund. Refunds above INR 1000 must be escalated to a human and never issued automatically. Use tools and do not invent order facts."
+    },
+    {
+      "role": "user",
+      "content": "My order ORD-100048 reached me very late. I would like a refund."
+    }
+  ],
+  "tokens_used": 0,
+  "llm_calls": 0,
+  "step_number": 0,
+  "steps": [],
+  "tools_executed": [],
+  "updated_at": "2026-10-29T13:36:10.539603+00:00"
+}
