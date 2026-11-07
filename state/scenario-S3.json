@@ -86,7 +86,7 @@
       "role": "tool",
       "tool_call_id": "call_4",
       "name": "escalate_to_human",
-      "content": "{\"refund_inr\": 1999.0, \"ledger_status\": \"recorded\", \"tool_name\": \"escalate_to_human\"}"
+      "content": "{\"refund_inr\": 1999.0, \"ledger_status\": \"already_recorded\", \"tool_name\": \"escalate_to_human\", \"human_review_required\": true}"
     }
   ],
   "tokens_used": 845,
@@ -148,8 +148,9 @@
       },
       "observation": {
         "refund_inr": 1999.0,
-        "ledger_status": "recorded",
-        "tool_name": "escalate_to_human"
+        "ledger_status": "already_recorded",
+        "tool_name": "escalate_to_human",
+        "human_review_required": true
       }
     }
   ],
@@ -159,5 +160,5 @@
     "calculate_refund",
     "escalate_to_human"
   ],
-  "updated_at": "2026-10-29T13:36:10.473730+00:00"
+  "updated_at": "2026-11-06T17:00:46.640348+00:00"
 }

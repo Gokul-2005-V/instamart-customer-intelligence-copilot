@@ -86,7 +86,7 @@
       "role": "tool",
       "tool_call_id": "call_4",
       "name": "issue_refund",
-      "content": "{\"refund_inr\": 128.25, \"ledger_status\": \"recorded\", \"tool_name\": \"issue_refund\"}"
+      "content": "{\"refund_inr\": 128.25, \"ledger_status\": \"already_recorded\", \"tool_name\": \"issue_refund\", \"human_review_required\": false}"
     }
   ],
   "tokens_used": 861,
@@ -148,8 +148,9 @@
       },
       "observation": {
         "refund_inr": 128.25,
-        "ledger_status": "recorded",
-        "tool_name": "issue_refund"
+        "ledger_status": "already_recorded",
+        "tool_name": "issue_refund",
+        "human_review_required": false
       }
     }
   ],
@@ -159,5 +160,5 @@
     "calculate_refund",
     "issue_refund"
   ],
-  "updated_at": "2026-10-29T13:36:10.442985+00:00"
+  "updated_at": "2026-11-06T17:00:46.606107+00:00"
 }

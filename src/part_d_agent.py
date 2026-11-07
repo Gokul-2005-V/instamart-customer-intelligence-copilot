@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import sqlite3
 import sys
@@ -74,54 +75,174 @@ def search_policy(query: str) -> dict:
 
 
 def calculate_refund(order_amount: float, delivery_minutes: float | None) -> dict:
-    """Completed-order eligibility is checked by the agent; late delivery means >45 minutes."""
+    """Return the full order amount only when delivery took more than 45 minutes."""
     try:
-        amount = max(0.0, float(order_amount))
+        amount = float(order_amount)
         minutes = None if delivery_minutes is None else float(delivery_minutes)
-    except (TypeError, ValueError):
-        return {"refund_inr": 0.0}
-    return {"refund_inr": round(amount if minutes is not None and minutes > 45 else 0.0, 2)}
+    except (TypeError, ValueError, OverflowError):
+        return {"refund_inr": 0.0, "error": "invalid order amount or delivery time"}
+
+    if not math.isfinite(amount) or amount < 0:
+        return {"refund_inr": 0.0, "error": "order amount must be a finite non-negative number"}
+    if minutes is not None and not math.isfinite(minutes):
+        return {"refund_inr": 0.0, "error": "delivery time must be finite"}
+
+    eligible = amount if minutes is not None and minutes > 45 else 0.0
+    return {"refund_inr": round(eligible, 2)}
+
+
+def _validate_refund_request(order_id: str, refund_inr: float, action: str) -> dict | None:
+    """Validate the database order, eligibility, amount, and action threshold."""
+    normalized_order_id = str(order_id or "").strip()
+    if not normalized_order_id:
+        return {"error": "order_id is required"}
+
+    if action not in {"issue_refund", "escalate_to_human"}:
+        return {"error": "unsupported refund action"}
+
+    try:
+        amount = float(refund_inr)
+    except (TypeError, ValueError, OverflowError):
+        return {"error": "refund amount must be a valid number"}
+
+    if not math.isfinite(amount) or amount <= 0:
+        return {"error": "refund amount must be a positive finite number"}
+
+    order = get_order(normalized_order_id)
+    if not isinstance(order, dict):
+        return {"error": "order lookup returned an invalid response"}
+    if order.get("error"):
+        return order
+
+    if str(order.get("status", "")).strip().lower() != "completed":
+        return {"error": "refund is only allowed for completed orders"}
+
+    try:
+        order_amount = float(order["order_amount"])
+        delivery_minutes = float(order["delivery_minutes"])
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return {"error": "order has missing or invalid refund eligibility data"}
+
+    if not math.isfinite(order_amount) or order_amount <= 0:
+        return {"error": "order amount must be a positive finite number"}
+    if not math.isfinite(delivery_minutes) or delivery_minutes < 0:
+        return {"error": "delivery time must be a finite non-negative number"}
+    if delivery_minutes <= 45:
+        return {"error": "order is not eligible: delivery was not late"}
+
+    calculation = calculate_refund(order_amount, delivery_minutes)
+    eligible = float(calculation.get("refund_inr", 0.0))
+    amount_rounded = round(amount, 2)
+    eligible_rounded = round(eligible, 2)
+    if amount_rounded != eligible_rounded or amount_rounded > round(order_amount, 2):
+        return {
+            "error": "requested refund does not match the eligible refund",
+            "eligible_refund_inr": eligible_rounded,
+        }
+
+    if action == "issue_refund" and amount_rounded > 1000:
+        return {"error": "refund above INR 1000 requires human escalation"}
+    if action == "escalate_to_human" and amount_rounded <= 1000:
+        return {"error": "human escalation is reserved for refunds above INR 1000"}
+
+    return None
 
 
 def _ledger_action(tool_name: str, order_id: str, refund_inr: float) -> dict:
-    """Append a ledger record, avoiding an identical duplicate side effect."""
-    amount = round(float(refund_inr), 2)
-    if amount <= 0:
-        return {"error": "refund amount must be positive", "refund_inr": amount}
+    """Append one action per order; fail closed on unreadable or malformed ledgers."""
+    try:
+        amount = round(float(refund_inr), 2)
+    except (TypeError, ValueError, OverflowError):
+        return {"error": "refund amount must be a valid number"}
+
+    if not math.isfinite(amount) or amount <= 0:
+        return {"error": "refund amount must be a positive finite number"}
+    if tool_name not in {"issue_refund", "escalate_to_human"}:
+        return {"error": "unsupported ledger action"}
+
     ledger = OUTPUT_DIR / "refund_ledger.jsonl"
     if ledger.exists():
         try:
-            for line in ledger.read_text(encoding="utf-8").splitlines():
-                if not line.strip():
-                    continue
+            existing_lines = ledger.read_text(encoding="utf-8").splitlines()
+        except OSError as exc:
+            return {"error": "could not read refund ledger; refusing action", "detail": str(exc)}
+
+        for line_number, line in enumerate(existing_lines, start=1):
+            if not line.strip():
+                continue
+            try:
                 old = json.loads(line)
-                if (old.get("order_id") == str(order_id)
-                    and old.get("tool_name") == tool_name
-                    and round(float(old.get("refund_inr", -1)), 2) == amount):
-                    return {"refund_inr": amount, "ledger_status": "already_recorded", "tool_name": tool_name}
-        except (OSError, ValueError, TypeError):
-            pass
+            except json.JSONDecodeError:
+                return {
+                    "error": "refund ledger contains invalid JSON; refusing action",
+                    "line": line_number,
+                }
+            if not isinstance(old, dict):
+                return {
+                    "error": "refund ledger contains an invalid record; refusing action",
+                    "line": line_number,
+                }
+
+            if str(old.get("order_id", "")) == str(order_id):
+                try:
+                    old_amount = round(float(old.get("refund_inr")), 2)
+                except (TypeError, ValueError, OverflowError):
+                    return {
+                        "error": "existing ledger record has an invalid refund amount; refusing action",
+                        "line": line_number,
+                    }
+
+                if old.get("tool_name") == tool_name and old_amount == amount:
+                    return {
+                        "refund_inr": amount,
+                        "ledger_status": "already_recorded",
+                        "tool_name": tool_name,
+                        "human_review_required": tool_name == "escalate_to_human",
+                    }
+
+                return {
+                    "error": "a refund action is already recorded for this order",
+                    "existing_tool": old.get("tool_name"),
+                    "existing_refund_inr": old_amount,
+                }
+
     entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "tool_name": tool_name,
         "order_id": str(order_id),
         "refund_inr": amount,
     }
-    with ledger.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(entry) + "\n")
-    return {"refund_inr": amount, "ledger_status": "recorded", "tool_name": tool_name}
+    if tool_name == "escalate_to_human":
+        entry["status"] = "pending_human_review"
+
+    try:
+        with ledger.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except OSError as exc:
+        return {"error": "could not write refund ledger", "detail": str(exc)}
+
+    return {
+        "refund_inr": amount,
+        "ledger_status": "pending_human_review" if tool_name == "escalate_to_human" else "recorded",
+        "tool_name": tool_name,
+        "human_review_required": tool_name == "escalate_to_human",
+    }
 
 
 def issue_refund(order_id: str, refund_inr: float) -> dict:
-    if float(refund_inr) > 1000:
-        return {"error": "refund above INR 1000 requires human escalation"}
-    return _ledger_action("issue_refund", order_id, refund_inr)
+    """Record an eligible refund of INR 1000 or less."""
+    error = _validate_refund_request(order_id, refund_inr, "issue_refund")
+    if error is not None:
+        return error
+    return _ledger_action("issue_refund", str(order_id).strip(), refund_inr)
 
 
 def escalate_to_human(order_id: str, refund_inr: float) -> dict:
-    if float(refund_inr) <= 1000:
-        return {"error": "human escalation is reserved for refunds above INR 1000"}
-    return _ledger_action("escalate_to_human", order_id, refund_inr)
+    """Record an eligible refund above INR 1000 as pending human review."""
+    error = _validate_refund_request(order_id, refund_inr, "escalate_to_human")
+    if error is not None:
+        return error
+    return _ledger_action("escalate_to_human", str(order_id).strip(), refund_inr)
 
 
 TOOL_MAP = {

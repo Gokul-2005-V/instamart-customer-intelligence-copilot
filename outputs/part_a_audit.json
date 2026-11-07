@@ -33,6 +33,13 @@
           "count": 30,
           "percent": 2.5
         }
+      },
+      "blank_strings": {
+        "customer_id": 0,
+        "city": 0,
+        "signup_date": 0,
+        "age": 0,
+        "gender": 0
       }
     },
     "products": {
@@ -63,6 +70,12 @@
           "count": 0,
           "percent": 0.0
         }
+      },
+      "blank_strings": {
+        "product_id": 0,
+        "product_name": 0,
+        "category": 0,
+        "price_inr": 0
       }
     },
     "orders": {
@@ -118,6 +131,59 @@
           "count": 2541,
           "percent": 19.421
         }
+      },
+      "blank_strings": {
+        "order_id": 0,
+        "customer_id": 0,
+        "product_id": 0,
+        "quantity": 0,
+        "order_ts": 0,
+        "status": 0,
+        "discount_pct": 0,
+        "order_amount": 0,
+        "delivery_minutes": 0
+      }
+    },
+    "tickets": {
+      "shape": [
+        164,
+        5
+      ],
+      "dtypes": {
+        "ticket_id": "object",
+        "customer_id": "object",
+        "order_id": "object",
+        "text": "object",
+        "true_category": "object"
+      },
+      "missing": {
+        "ticket_id": {
+          "count": 0,
+          "percent": 0.0
+        },
+        "customer_id": {
+          "count": 0,
+          "percent": 0.0
+        },
+        "order_id": {
+          "count": 0,
+          "percent": 0.0
+        },
+        "text": {
+          "count": 0,
+          "percent": 0.0
+        },
+        "true_category": {
+          "count": 0,
+          "percent": 0.0
+        }
+      },
+      "blank_strings": {
+        "ticket_id": 0,
+        "customer_id": 0,
+        "order_id": 8,
+        "text": 4,
+        "true_category": 0
       }
     }
   },
@@ -133,6 +199,14 @@
     "customer_ages_outside_10_100": 6,
     "distinct_raw_city_spellings": 24,
     "distinct_nonblank_raw_gender_spellings": 10,
-    "blank_customer_genders": 30
+    "blank_customer_genders": 30,
+    "raw_ticket_rows": 164,
+    "blank_ticket_strings_by_column": {
+      "ticket_id": 0,
+      "customer_id": 0,
+      "order_id": 8,
+      "text": 4,
+      "true_category": 0
+    }
   }
 }
