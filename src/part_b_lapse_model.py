@@ -256,17 +256,18 @@ forest_f1 = f1_score(
     y_test, forest_predictions, zero_division=0
 )
 
-# Select the model with higher test F1, as a comparison
-# requested by the assignment. This selection uses test
-# results, so the final test estimate is not fully independent
-# of the model-selection decision.
+# Select the model using cross-validation F1 only.
+# The held-out test set is reserved for final evaluation.
 selected_model = (
-    best_forest if forest_f1 >= logistic_f1 else best_logistic
+    best_forest
+    if forest_search.best_score_ >= logistic_search.best_score_
+    else best_logistic
 )
 
 print(
     "\nSelected model:",
-    "Random Forest" if forest_f1 >= logistic_f1
+    "Random Forest"
+    if forest_search.best_score_ >= logistic_search.best_score_
     else "Logistic Regression",
 )
 
