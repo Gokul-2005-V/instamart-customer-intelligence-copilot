@@ -1,5 +1,5 @@
 Instamart Customer Intelligence & Support Copilot
-1. Project Overview
+# Overview
 The Instamart Customer Intelligence & Support Copilot is an end-to-end, offline AI/ML capstone project built using synthetic e-commerce data.
 The project combines data engineering, exploratory data analysis, machine learning, customer intelligence, LLM-based support ticket classification, policy retrieval, and a guarded refund agent.
 It demonstrates how data science and LLM systems can support everyday e-commerce operations, including:
@@ -106,7 +106,7 @@ py -m pip install --upgrade pip
 py -m pip install -r requirements.txt
 ```
 ---
-5. Reproduce the Project
+# Reproduce
 Run the following commands from the repository root.
 Generate synthetic data
 ```powershell
@@ -143,7 +143,7 @@ py -m unittest discover -s tests -v
 ```
 The current automated unittest suite contains two Part A artifact tests. Parts B, C and D also have script-level checkpoints; broader dedicated unit-test coverage remains future work.
 ---
-6. Part A — Data Preparation and Exploratory Data Analysis
+# Part A
 Objective
 Prepare reliable customer, product and order datasets for downstream analytics and machine learning.
 Raw data audit
@@ -232,7 +232,7 @@ ALL CHECKPOINTS PASSED
 ALL EDA CHECKPOINTS PASSED
 ```
 ---
-7. Part B — Customer Intelligence and Machine Learning
+# Part B
 Objective
 Understand customer purchasing behaviour, identify customer segments and predict customer lapse.
 A. RFM Analysis
@@ -294,7 +294,7 @@ The held-out test results were:
 Model	TN	FP	FN	TP	Precision (lapsed)	Recall (lapsed)	F1 (lapsed)
 Logistic Regression	106	37	17	72	0.6606	0.8090	0.7273
 Random Forest	112	31	23	66	0.6804	0.7416	0.7097
-Logistic Regression was selected because its observed test F1 (0.7273) was higher than the Random Forest test F1 (0.7097). A false negative means missing a customer who is about to lapse; a false positive means spending an incentive on a customer who may have remained active. The preferred trade-off depends on campaign cost and the value of retaining each customer.
+Random Forest was selected using the higher cross-validation F1 score (0.6748 versus 0.6392). The held-out test set was reserved for final evaluation. Logistic Regression achieved test F1 of 0.7273, while Random Forest achieved 0.7097. Both results are reported for comparison; test performance was not used to select the model. A false negative means missing a customer who is about to lapse; a false positive means spending an incentive on a customer who may have remained active. The preferred trade-off depends on campaign cost and the value of retaining each customer.
 Class-balance experiment: The training set was oversampled only, from 570 not-lapsed / 354 lapsed to 570 / 570. On the unchanged test set, the oversampled Logistic Regression produced TN=86, FP=57, FN=8, TP=81, precision=0.5870, recall=0.9101 and F1=0.7137. Recall increased substantially, while precision decreased: the model catches more lapsing customers but also targets more customers who are not actually lapsed.
 Random Forest feature importance (top five):
 Feature	Importance
@@ -304,8 +304,16 @@ Recency	0.114974
 Cancellation rate	0.053057
 Average discount	0.040657
 Frequency and monetary value are the strongest recorded predictors in this fitted forest.
-The test-set results were also evaluated, and Logistic Regression was selected based on its observed test F1 score.
-Evaluation note: Selecting a model using test-set performance can introduce optimistic selection bias. A separate validation set should be used for unbiased model selection in a production-quality workflow.
+Model-selection protocol: Cross-validation F1 was used to select the Random Forest model. The held-out test set was used only for final evaluation.
+
+Preprocessing evidence:
+- Training-only scaler frequency mean: 8.1158.
+- Full-cohort frequency mean: 8.0285.
+
+Logistic Regression coefficients:
+- Recency: -0.0285.
+- Frequency: -1.2811.
+- Monetary: +0.0295.
 Part B outputs
 `outputs/customer_rfm.csv`
 `outputs/customer_segments.csv`
@@ -316,7 +324,7 @@ Part B outputs
 `outputs/lapse_model.joblib`
 `outputs/retention_list.csv`
 ---
-8. Part C — Privacy-Aware LLM Support Ticket Triage
+# Part C
 Objective
 Build an offline LLM-based ticket classification workflow that protects customer information and produces structured support decisions.
 Main capabilities
@@ -371,7 +379,7 @@ Part C outputs
 `outputs/triage_budget_demo.csv`
 `outputs/triage_results.csv`
 ---
-9. Part D — Policy Retrieval and Guarded Refund Agent
+# Part D
 Objective
 Build an offline policy retrieval system and a controlled agent workflow for refund-related support requests.
 A. Retrieval-Augmented Generation (RAG)
@@ -440,7 +448,7 @@ ALL PART D REFUND AGENT CHECKPOINTS PASSED.
 Part D outputs
 RAG outputs:
 `outputs/policy_chunks_overlap_10.csv`
-`outputs/policy_chunks_0.csv`
+`outputs/policy_chunks_overlap_0.csv`
 `outputs/part_d_rag_metrics.json`
 Agent outputs:
 `outputs/agent_runs.jsonl`
@@ -470,18 +478,23 @@ The currently available automated unittest suite contains two tests:
 Both passed during project verification.
 The Part A, Part B, Part C and Part D scripts also contain their own validation or checkpoint workflows.
 ---
-11. Project Limitations
+# Limitations and Next Steps
 Synthetic data: The project uses generated data rather than real Instamart customer records.
 Mock LLM: LLM outputs are generated using the supplied mock implementation, not a live production model.
 Offline execution: No external API integration or live production service is included.
 Model generalisation: Machine learning results require validation on independent real-world data.
-Test-set selection: Selecting a model using test-set performance can introduce selection bias.
+Model selection: The model is selected using cross-validation. Further evaluation on independent real-world data is required to assess generalisation.
 Token budget: The Part C pre-call token budget check is not a strict hard cap on total tokens consumed.
 Customer segments: The retention list is illustrative and uses customer segment information calculated over the RFM observation window.
 Refund execution: Refund operations are simulated and do not connect to a real payment gateway.
 Test coverage: The automated unittest suite currently covers two Part A artifact checks. More dedicated tests are needed for Parts B, C and D.
-Lapse preprocessing evidence: The model results are recorded, but this README does not publish the fitted training-only scaler mean beside the full-cohort frequency mean, nor the three requested Logistic Regression coefficient signs. Those values must come from the fitted pipeline/model artifacts or training-script output; they are not inferred here.
 RAG evaluation detail: The recorded summary gives aggregate overlap results, but does not identify the exact failed zero-overlap question or separately list expected-document and expected-fact hit counts. The aggregate values are reported without inventing those details.
+
+Next Steps:
+- Validate model performance using independent, real-world data.
+- Expand automated tests for Parts B, C and D.
+- Improve token-budget enforcement and RAG evaluation.
+- Integrate real services only with appropriate authorization and safety controls.
 Ticket privacy/retry implementation evidence: Redaction totals and recovered retry counts are reported. The README does not reproduce the exact regex assertion output or individual retry log waits; those are implementation-level checks in the source/run logs.
 ---
 12. Business Impact
